@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef,  } from "react";
 import "./styles.css";
 
 import React from "react";
@@ -13,10 +13,51 @@ export default function App() {
     charOne: "",
     charTwo: "",
     charThree: "",
-    charFour: ""
+    charFour: "",
   });
 
   const [verified, setVerified] = useState(undefined);
+
+  const firstInputFocusRef = useRef(null)
+
+  useEffect(() => {
+    if (!verified) {
+      setUserInput((prev) => ({
+        ...prev,
+        charOne: "",
+        charTwo: "",
+        charThree: "",
+        charFour: "",
+      }));
+      firstInputFocusRef.current.focus()     
+    }   
+  }, [verified]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    //İkinci denemeden sonra birinci inputa tekrar focus olabilmek için formun yenilenmesi gerekiyor. Görevde yenilemenin engellenmesi istendiğinden sadece bir defa birinci inputa focus olabiliyoruz. Bu görevler içinde yoktu, kod havuzumda bulunsun diye ben eklemek istedim.
+  };
+
+  const handleClick = () => {
+    if (
+      userInput.charOne === passCode[0] &&
+      userInput.charTwo === passCode[1] &&
+      userInput.charThree === passCode[2] &&
+      userInput.charFour === passCode[3]
+    ) {
+      setVerified(true);
+    } else {
+      setVerified(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserInput((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   /* Challenge
 
@@ -35,20 +76,51 @@ export default function App() {
     <div className="wrapper">
       <Header />
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <Message status={verified} />
 
         <div>
-          <input required type="password" name="charOne" />
+          <input
+            required
+            type="password"
+            name="charOne"
+            maxLength="1"
+            value={userInput.charOne}
+            ref={firstInputFocusRef}
+            onChange={handleChange}
+          />
 
-          <input required type="password" name="charTwo" maxLength="1" />
+          <input
+            required
+            type="password"
+            name="charTwo"
+            maxLength="1"
+            value={userInput.charTwo}
+            onChange={handleChange}
+          />
 
-          <input required type="password" name="charThree" maxLength="1" />
+          <input
+            required
+            type="password"
+            name="charThree"
+            maxLength="1"
+            value={userInput.charThree}
+            onChange={handleChange}
+          />
 
-          <input required type="password" name="charFour" maxLength="1" />
+          <input
+            required
+            type="password"
+            name="charFour"
+            maxLength="1"
+            value={userInput.charFour}
+            onChange={handleChange}
+          />
         </div>
 
-        <button disabled={verified}>Gönder</button>
+        <button onClick={handleClick} disabled={verified}>
+          Gönder
+        </button>
       </form>
 
       <Footer />
